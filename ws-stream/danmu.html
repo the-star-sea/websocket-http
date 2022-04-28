@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Danmaku</title>
+  <link rel="stylesheet" href="./style.css">
+
+</head>
+<body>
+
+<div class="screen_container" id="contents">
+<!--  stream video-->
+  <video id="haha" muted width= "800" height= "400"></video>
+    <script>
+        var video = document.querySelector('video');
+        var assetURL = 'frag_bunny.mp4';
+        var mimeCodec = 'video/mp4; codecs="avc1.42E01E, mp4a.40.2"';
+
+        if ('MediaSource' in window && MediaSource.isTypeSupported(mimeCodec)) {
+            var mediaSource = new MediaSource();
+            video.src = URL.createObjectURL(mediaSource);
+            mediaSource.addEventListener('sourceopen', sourceOpen);
+        } else {
+            console.error('Unsupported MIME type or codec: ', mimeCodec);
+        }
+
+        function sourceOpen(_) {
+            var mediaSource = this;
+            var sourceBuffer = mediaSource.addSourceBuffer(mimeCodec);
+            fetchAB(assetURL, function (buf) {
+                sourceBuffer.addEventListener('updateend', function (_) {
+                    mediaSource.endOfStream();
+                    video.play();
+                });
+                sourceBuffer.appendBuffer(buf);
+            });
+        }
+        function fetchAB(url, cb) {
+            console.log(url);
+            var xhr = new XMLHttpRequest;
+            xhr.open('get', url);
+            xhr.responseType = 'arraybuffer';
+            xhr.onload = function () {
+                cb(xhr.response);
+            };
+            xhr.send();
+        }
+
+    </script>
+<!--  <video id="haha" width= "800" height= "400"  controls autoplay>-->
+<!--  <source src="./movie.mp4" type="video/mp4">-->
+<!--</video>-->
+</div>
+<div class="box">
+<textarea id="logi" style="width: 800px; height:200px" type="text" ></textarea>
+</div>
+<div class="main">
+
+  <textarea id="danmakutext" type="text" style="width: 800px; height:20px" placeholder="Danmaku~"></textarea>
+  <button class="send">Send</button>
+</div>
+<!-- jQuery -->
+<script src="https://cdn.staticfile.org/jquery/3.3.1/jquery.min.js"></script>
+<script src="main.js"></script>
+</body>
+
+</html>
